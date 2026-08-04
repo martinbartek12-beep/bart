@@ -1,0 +1,14 @@
+# Static site, no build step. Netlify just serves the folder as-is and picks up
+# the serverless function used for Stripe Checkout.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = ""
+
+# Never ship the local preview build or the handover notes to production.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

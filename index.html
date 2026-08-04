@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>havefungoods</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="view-home">
+
+  <!-- ============================================================ -->
+  <!-- SHARED HEADER (was duplicated inside all five views)          -->
+  <!-- ============================================================ -->
+  <header>
+    <div class="brand" onclick="goHome()">HAVEFUNGOODS</div>
+    <nav>
+      <a onclick="goShop()">SHOP</a>
+      <a onclick="goJourney()">THE JOURNEY</a>
+      <a onclick="goAbout()">ABOUT</a>
+      <a onclick="goCart()">CART <span id="cart-count"></span></a>
+    </nav>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- HOME VIEW                                                     -->
+  <!-- ============================================================ -->
+  <div id="home-view">
+
+
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carousel-track"><!-- cards are generated in JS, twice in a row for a seamless loop --></div>
+    </div>
+
+    <div class="hero-hint">Click a product for details</div>
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SHOP VIEW (grid of all products)                              -->
+  <!-- ============================================================ -->
+  <div id="shop-view">
+
+
+    <div class="shop-grid" id="shop-grid"><!-- cards are generated in JS --></div>
+
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- THE JOURNEY VIEW                                              -->
+  <!-- ============================================================ -->
+  <div id="journey-view">
+
+
+    <div class="journey-content">
+
+      <div class="journey-title">The Journey</div>
+
+      <div class="journey-intro">
+        "Started as a small university project by Martin Bártek and Mingi Jin, it focuses on skateboarding culture, <strong>targeting anyone who loves the sport, its lifestyle, or its fashion.</strong>"
+      </div>
+
+      <div class="journey-entry">
+        <img src="images/journey-university-project.jpg" alt="University project">
+      </div>
+
+      <div class="journey-entry">
+        <div class="journey-heading">Our First Pop-Up store in Seoul</div>
+        <a class="journey-img-link" href="https://www.youtube.com/watch?v=JGY6I_dqNi8" target="_blank" rel="noopener">
+          <img src="images/journey-first-popup.jpg" alt="First pop-up store in Seoul">
+          <span class="play-badge">▶ WATCH</span>
+        </a>
+        <div class="journey-caption">Konhase, Seoul, November 25th, 2023</div>
+      </div>
+
+      <div class="journey-entry">
+        <div class="journey-heading">Skatevideo premiere called "seoulmates"</div>
+        <a class="journey-img-link" href="https://www.youtube.com/watch?v=Ug2VEZUYL-I" target="_blank" rel="noopener">
+          <img src="images/journey-seoulmates.jpg" alt="Seoulmates skatevideo premiere">
+          <span class="play-badge">▶ WATCH</span>
+        </a>
+        <div class="journey-caption">Yiraera, Seoul, May 10th, 2024</div>
+      </div>
+
+      <div class="journey-entry">
+        <div class="journey-heading">Moving to Europe</div>
+        <div class="journey-text">We've moved to Europe, setting up shop in Prague. We celebrated the move with a public pop-up and DJ set at Kolektor café, bringing our community together. Everything we make is born out of local collaboration, working side by side with local studios to produce our goods.</div>
+        <a class="journey-img-link" href="https://www.youtube.com/watch?v=YWiu56qBnUg" target="_blank" rel="noopener">
+          <img src="images/journey-europe.jpg" alt="DJ set in Prague">
+          <span class="play-badge">▶ WATCH</span>
+        </a>
+        <div class="journey-caption">Kolektor Café, Prague, November 27th, 2025</div>
+      </div>
+
+      <div class="journey-entry">
+        <div class="journey-heading">Working on loafers prototype</div>
+        <img src="images/journey-shoe-prototypes.jpg" alt="Loafers prototype">
+      </div>
+
+      <div class="journey-signoff">
+        We're excited to see where our next steps will lead us.
+        <strong>HaveFunGoods &lt;3</strong>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ABOUT VIEW                                                    -->
+  <!-- ============================================================ -->
+  <div id="about-view">
+
+
+    <div class="about-content">
+
+      <div class="about-title">About</div>
+
+      <div class="about-section">
+        <div class="about-section-title">Shipping</div>
+
+        <div class="shipping-region">
+          <div class="shipping-region-name">Sweden, Finland, Denmark, Estonia, Latvia, Lithuania, Ireland, France, Germany, Belgium, Netherlands, Luxembourg, Spain, Italy, Greece, Portugal, Bulgaria, Croatia, Cyprus, Romania, Malta, Poland, ...</div>
+          <div class="shipping-row">
+            <div class="shipping-method">Standard Post Office — approx. delivery 3–5 days</div>
+            <div class="shipping-prices">
+              <div class="base">20,00 €</div>
+              <div class="extra">+5,00 € each additional item</div>
+            </div>
+          </div>
+          <div class="shipping-row">
+            <div class="shipping-method">Customer Pickup Point — please note us the name of the DPD pick up point at checkout</div>
+            <div class="shipping-prices">
+              <div class="base">15,00 €</div>
+              <div class="extra">+5,00 € each additional item</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shipping-region">
+          <div class="shipping-region-name">Asia</div>
+          <div class="shipping-row">
+            <div class="shipping-method">Standard Post Office — approx. delivery 3–5 days</div>
+            <div class="shipping-prices">
+              <div class="base">25,00 €</div>
+              <div class="extra">+5,00 € each additional item</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shipping-region">
+          <div class="shipping-region-name">Slovakia, Czechia</div>
+          <div class="shipping-row">
+            <div class="shipping-method">Standard Post Office — approx. delivery 3–5 days</div>
+            <div class="shipping-prices">
+              <div class="base">7,00 €</div>
+              <div class="extra">+3,00 € each additional item</div>
+            </div>
+          </div>
+          <div class="shipping-row">
+            <div class="shipping-method">Customer Pickup Point — please note us the name of the DPD pick up point at checkout</div>
+            <div class="shipping-prices">
+              <div class="base">5,00 €</div>
+              <div class="extra">+3,00 € each additional item</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">Returns</div>
+        <div class="about-text about-placeholder-note">Return policy — coming soon.</div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- PRODUCT DETAIL VIEW                                           -->
+  <!-- ============================================================ -->
+  <div id="detail-view">
+
+
+    <div class="back-link" onclick="goBack()">← BACK</div>
+
+    <div class="detail-layout">
+      <div class="detail-gallery">
+        <img class="detail-main-img" id="detail-main-img" src="" alt="">
+      </div>
+
+      <div class="detail-info">
+        <div class="detail-thumbs" id="detail-thumbs"></div>
+
+        <div class="detail-name" id="detail-name"></div>
+        <div class="detail-price" id="detail-price"></div>
+        <div class="detail-description" id="detail-description"></div>
+
+        <div id="color-block">
+          <div class="detail-section-label">Color</div>
+          <div class="color-options" id="color-options"></div>
+        </div>
+
+        <div id="size-block">
+          <div class="detail-section-label">Size</div>
+          <div class="size-options" id="size-options"></div>
+        </div>
+
+        <button type="button" class="buy-btn" id="detail-buy-btn">ADD TO CART</button>
+
+        <div class="detail-note">Shipping and returns — see the ABOUT section.</div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CART VIEW                                                     -->
+  <!-- ============================================================ -->
+  <div id="cart-view">
+
+    <div class="back-link" onclick="goShop()">&larr; CONTINUE SHOPPING</div>
+
+    <div class="cart-content">
+      <h1 class="cart-title">CART</h1>
+
+      <div id="cart-empty" class="cart-empty">Your cart is empty.</div>
+
+      <div id="cart-lines"><!-- lines are generated in app.js --></div>
+
+      <div id="cart-summary" class="cart-summary">
+        <div class="cart-subtotal-row">
+          <span>SUBTOTAL</span>
+          <span id="cart-subtotal"></span>
+        </div>
+        <div class="cart-shipping-note">Shipping calculated at checkout.</div>
+        <button type="button" class="checkout-btn" id="checkout-btn">CHECKOUT</button>
+        <div id="checkout-error" class="checkout-error"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SHARED FOOTER (was duplicated in four views; hidden on home)  -->
+  <!-- ============================================================ -->
+  <footer>
+    <div>&copy; <span id="year"></span> havefungoods</div>
+    <div>ALL RIGHTS RESERVED</div>
+  </footer>
+
+  <!-- order matters: products.js defines PRODUCTS, cart.js reads it on load,
+       app.js reads both at load time -->
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
