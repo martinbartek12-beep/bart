@@ -94,7 +94,9 @@ exports.handler = async function (event) {
     lineItems.push({ price: priceId, quantity: qty });
 
     // Carry the human-readable variant through to the order, so whoever packs
-    // the parcel can see "L" without decoding a SKU.
+    // the parcel can see "L" without decoding a SKU. This is duplicated onto the
+    // payment itself below — session metadata alone is easy to miss, because the
+    // Payments screen doesn't show it.
     var parts = describeSku(sku);
     metadata['item_' + (i + 1)] =
       parts.productId +
@@ -109,6 +111,14 @@ exports.handler = async function (event) {
     cancel_url: siteUrl + '/?checkout=cancelled',
     line_items: lineItems,
     metadata: metadata,
+    // Same lines copied onto the PaymentIntent, so the sizes show up on the
+    // payment in the dashboard — that's the screen you actually open when
+    // packing an order.
+    payment_intent_data: {
+      metadata: metadata,
+      // Shows in the payment list, so an order is identifiable at a glance.
+      description: 'havefungoods — ' + lineItems.reduce(function (n, l) { return n + l.quantity; }, 0) + ' item(s)'
+    },
     // Stripe collects the address; without this you get paid but have nowhere
     // to ship to.
     shipping_address_collection: {
