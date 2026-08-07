@@ -1,4 +1,4 @@
-)* {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -103,6 +103,10 @@ nav a:hover { text-decoration: underline; }
   align-items: center;
   overflow: hidden;
   touch-action: pan-y;            /* horizontal gestures are ours, vertical scrolls the page */
+
+  /* Breathing room so a card's own border is never clipped by overflow when the
+     strip is short — on a phone the card can be taller than the space it sits in. */
+  padding: 2px 0;
 }
 
 /* The marquee is a CSS animation because the compositor runs it on the GPU and
@@ -196,6 +200,13 @@ nav a:hover { text-decoration: underline; }
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+
+  /* Cards only draw their right and bottom edges, so neighbours share a single
+     line instead of doubling up. That leaves the outer left and top edges of the
+     grid undrawn — most visible on mobile, where one column means every card is
+     missing its left side. The grid closes them here. */
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
 }
 
 @media (max-width: 1100px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
