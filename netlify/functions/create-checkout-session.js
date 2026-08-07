@@ -105,6 +105,39 @@ exports.handler = async function (event) {
       ' x' + qty;
   }
 
+  // Shipping zones. The customer picks a zone in the cart, so we can send Stripe
+  // exactly one rate instead of offering all three and letting a Japanese order
+  // pick the 6 EUR Czech rate. allowed_countries is narrowed to match, so the
+  // chosen zone and the delivery address cannot disagree.
+  var ZONES = {
+    local: {
+      rate: process.env.STRIPE_SHIPPING_RATE_LOCAL,
+      countries: ['CZ', 'SK']
+    },
+    europe: {
+      rate: process.env.STRIPE_SHIPPING_RATE_EU,
+      countries: [
+        'AT', 'BE', 'BG', 'HR', 'CY', 'DK', 'EE', 'FI', 'FR', 'DE',
+        'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL',
+        'PT', 'RO', 'SI', 'ES', 'SE'
+      ]
+    },
+    asia: {
+      rate: process.env.STRIPE_SHIPPING_RATE_ASIA,
+      countries: ['KR', 'JP']
+    }
+  };
+
+  var zoneKey = typeof payload.zone === 'string' ? payload.zone : '';
+  var zone = Object.prototype.hasOwnProperty.call(ZONES, zoneKey) ? ZONES[zoneKey] : null;
+  if (!zone) {
+    return json(400, { error: 'Please choose a delivery region' });
+  }
+  if (!zone.rate) {
+    console.error('Shipping rate not configured for zone: ' + zoneKey);
+    return json(500, { error: 'Checkout is not configured yet' });
+  }
+
   var params = {
     mode: 'payment',
     success_url: siteUrl + '/?checkout=success',
@@ -120,44 +153,12 @@ exports.handler = async function (event) {
       description: 'havefungoods — ' + lineItems.reduce(function (n, l) { return n + l.quantity; }, 0) + ' item(s)'
     },
     // Stripe collects the address; without this you get paid but have nowhere
-    // to ship to.
+    // to ship to. Restricted to the chosen zone so the address matches the rate.
     shipping_address_collection: {
-      // A customer whose country is missing here cannot complete an order, so
-      // this list is the real answer to "where do we ship?" — the INFO page is
-      // only a description of it. Keep the two in step.
-      //
-      // EU (27) + South Korea and Japan. Non-EU destinations need a customs
-      // declaration from you and may cost the customer import duty.
-      //
-      // The US is deliberately absent: the de minimis exemption ended in
-      // August 2025, so every parcel is now dutiable, needs an HS code, and the
-      // duty falls on the recipient — who can refuse delivery and leave you with
-      // the cost. Revisit once customs paperwork is a solved problem here.
-      allowed_countries: [
-        // --- EU ---
-        'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
-        'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
-        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
-        // --- Asia ---
-        'KR', 'JP'
-      ]
-    }
+      allowed_countries: zone.countries
+    },
+    shipping_options: [{ shipping_rate: zone.rate }]
   };
-
-  // Shipping rates are optional so the function still works before they exist.
-  // Until they are set, the customer pays no postage — see the note in the
-  // handover about the tiered rate the client wanted.
-  var rateIds = [
-    process.env.STRIPE_SHIPPING_RATE_LOCAL,
-    process.env.STRIPE_SHIPPING_RATE_EU,
-    process.env.STRIPE_SHIPPING_RATE_ASIA
-  ].filter(Boolean);
-
-  if (rateIds.length) {
-    params.shipping_options = rateIds.map(function (id) {
-      return { shipping_rate: id };
-    });
-  }
 
   try {
     var res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
