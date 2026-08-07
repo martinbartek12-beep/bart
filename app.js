@@ -164,35 +164,6 @@ carouselWrap.addEventListener('wheel', function (e) {
   }, 250);
 }, { passive: false });
 
-// --- keep the card on whole pixels -----------------------------------------
-// The cards are vertically centred, so the browser splits the leftover space in
-// half. When that leftover is an odd number of pixels the card lands on a half
-// pixel, and a 1px border straddling half a pixel gets drawn at half thickness —
-// visibly thinner on the top edge, and most obvious on a high-DPI phone.
-//
-// CSS can't fix this on its own because the strip's height depends on the
-// viewport. So: measure, and add a pixel of padding when the gap is odd.
-function snapCarousel() {
-  var card = track.querySelector('.carousel-card');
-  if (!card) return;
-
-  carouselWrap.style.paddingBottom = '2px';
-  var cs = getComputedStyle(carouselWrap);
-  var available = carouselWrap.clientHeight
-    - parseFloat(cs.paddingTop)
-    - parseFloat(cs.paddingBottom);
-
-  var gap = Math.round(available - card.offsetHeight);
-  if (gap % 2 !== 0) {
-    carouselWrap.style.paddingBottom = '3px';
-  }
-}
-
-snapCarousel();
-window.addEventListener('resize', snapCarousel);
-// Card height depends on the images, so re-check once they've loaded.
-window.addEventListener('load', snapCarousel);
-
 // --- pause on hover, so cards are easier to click ---
 carouselWrap.addEventListener('mouseenter', function () {
   if (!dragging) track.classList.add('paused');
@@ -261,6 +232,8 @@ function showView(name) {
 function goHome()    { showView('home');    lastView = 'home'; }
 function goShop()    { showView('shop');    lastView = 'shop'; }
 function goJourney() { showView('journey'); lastView = 'journey'; }
+// Kept even though the nav link is commented out in index.html — restoring the
+// link is then a one-line change.
 function goInfo()    { showView('info');    lastView = 'info'; }
 
 function goBack() {
