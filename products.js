@@ -9,6 +9,23 @@
 //              them in sync.
 var PRODUCTS = [
   {
+    id: 'five-panel-cap',
+    name: '5-Panel Cap',
+    price: '30,00 €',
+    priceCents: 3000,
+    description: '5-panel cap with embroidered logo.',
+    images: ['images/five-panel-cap-black-1.jpg', 'images/five-panel-cap-black-2.jpg'],
+    sizes: [
+      { label: 'ONE SIZE', soldOut: false }
+    ],
+    colors: [
+      { label: 'Black', hex: '#1a1a1a', images: ['images/five-panel-cap-black-1.jpg', 'images/five-panel-cap-black-2.jpg'], stripeLink: 'https://buy.stripe.com/aFa14ofu97f356S7TsbMQ05' },
+      { label: 'Olive Green', hex: '#6b6b3a', images: ['images/five-panel-cap-olive-1.jpg', 'images/five-panel-cap-olive-2.jpg'], stripeLink: 'https://buy.stripe.com/4gM5kE3Lr9nb42O1v4bMQ07' },
+      { label: 'Chilli Red', hex: '#b3261e', images: ['images/five-panel-cap-red-1.jpg', 'images/five-panel-cap-red-2.jpg'], stripeLink: 'https://buy.stripe.com/eVqbJ20zfeHveHs7TsbMQ06' }
+    ],
+    stripeLink: 'https://buy.stripe.com/aFa14ofu97f356S7TsbMQ05'
+  },
+  {
     id: 'blue-t-shirt',
     name: 'Blue T-shirt',
     price: '35,00 €',
@@ -76,22 +93,5 @@ var PRODUCTS = [
       { label: 'ONE SIZE', soldOut: false }
     ],
     stripeLink: 'https://buy.stripe.com/5kQ6oI6XDfLz6aWb5EbMQ04'
-  },
-  {
-    id: 'five-panel-cap',
-    name: '5-Panel Cap',
-    price: '30,00 €',
-    priceCents: 3000,
-    description: '5-panel cap with embroidered logo.',
-    images: ['images/five-panel-cap-black-1.jpg', 'images/five-panel-cap-black-2.jpg'],
-    sizes: [
-      { label: 'ONE SIZE', soldOut: false }
-    ],
-    colors: [
-      { label: 'Black', hex: '#1a1a1a', images: ['images/five-panel-cap-black-1.jpg', 'images/five-panel-cap-black-2.jpg'], stripeLink: 'https://buy.stripe.com/aFa14ofu97f356S7TsbMQ05' },
-      { label: 'Olive Green', hex: '#6b6b3a', images: ['images/five-panel-cap-olive-1.jpg', 'images/five-panel-cap-olive-2.jpg'], stripeLink: 'https://buy.stripe.com/4gM5kE3Lr9nb42O1v4bMQ07' },
-      { label: 'Chilli Red', hex: '#b3261e', images: ['images/five-panel-cap-red-1.jpg', 'images/five-panel-cap-red-2.jpg'], stripeLink: 'https://buy.stripe.com/eVqbJ20zfeHveHs7TsbMQ06' }
-    ],
-    stripeLink: 'https://buy.stripe.com/aFa14ofu97f356S7TsbMQ05'
   }
 ];
