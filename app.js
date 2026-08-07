@@ -46,16 +46,76 @@ function renderCarousel() {
 }
 renderCarousel();
 
-// one CSS animation cycle (0% → -50%) = one full rotation of the unique cards
-track.addEventListener('animationiteration', function () {
+// --- auto-scroll -----------------------------------------------------------
+// The track holds every product twice, so when the scroll passes the halfway
+// point we can jump back by exactly half the width and the seam is invisible.
+// Scrolling (rather than animating a transform) is what makes swiping work:
+// the finger drags the same scroll position the timer nudges along.
+
+var carouselWrap = document.querySelector('.carousel-wrap');
+var CAROUSEL_SPEED = 0.6;      // px per frame at 60fps ≈ 36 px/s
+var carouselPaused = false;
+var resumeTimer = null;
+var lastLoopPosition = 0;
+
+function stepCarousel() {
+  // Only scroll while the home view is actually on screen — no point animating
+  // behind the shop or cart, and it keeps a backgrounded tab cheap.
+  if (!carouselPaused && document.body.classList.contains('view-home') && !document.hidden) {
+    carouselWrap.scrollLeft += CAROUSEL_SPEED;
+  }
+
+  var half = track.scrollWidth / 2;
+  if (carouselWrap.scrollLeft >= half) {
+    // rewind by exactly one copy — visually identical, so the jump is invisible
+    carouselWrap.scrollLeft -= half;
+    lastLoopPosition -= half;
+  }
+
+  // The cap thumbnail cycles once per full rotation, as it did with the old
+  // animationiteration event.
+  if (carouselWrap.scrollLeft - lastLoopPosition >= half) {
+    lastLoopPosition = carouselWrap.scrollLeft;
+    cycleCapColor();
+  }
+
+  requestAnimationFrame(stepCarousel);
+}
+
+function cycleCapColor() {
   currentCapColorIndex = (currentCapColorIndex + 1) % CAP_COLOR_CYCLE.length;
   var newSrc = CAP_THUMBS[CAP_COLOR_CYCLE[currentCapColorIndex]];
   document.querySelectorAll('.cap-carousel-img').forEach(function (img) { img.src = newSrc; });
-});
+}
 
-// pause on hover (makes clicking easier)
-track.addEventListener('mouseenter', function () { track.classList.add('paused'); });
-track.addEventListener('mouseleave', function () { track.classList.remove('paused'); });
+function pauseCarousel() {
+  carouselPaused = true;
+  if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+}
+
+// After a swipe, wait a moment before taking over again — resuming instantly
+// feels like the page is fighting the finger, especially during momentum.
+function resumeCarouselSoon(delay) {
+  if (resumeTimer) clearTimeout(resumeTimer);
+  resumeTimer = setTimeout(function () { carouselPaused = false; }, delay || 1500);
+}
+
+// Desktop: pause on hover so cards are easier to click.
+carouselWrap.addEventListener('mouseenter', pauseCarousel);
+carouselWrap.addEventListener('mouseleave', function () { resumeCarouselSoon(200); });
+
+// Touch: hold while the finger is down, then let momentum finish undisturbed.
+carouselWrap.addEventListener('touchstart', pauseCarousel, { passive: true });
+carouselWrap.addEventListener('touchend', function () { resumeCarouselSoon(1500); });
+carouselWrap.addEventListener('touchcancel', function () { resumeCarouselSoon(1500); });
+
+// Trackpad and mouse wheel horizontal scrolling counts as interaction too.
+carouselWrap.addEventListener('wheel', function () {
+  pauseCarousel();
+  resumeCarouselSoon(1500);
+}, { passive: true });
+
+requestAnimationFrame(stepCarousel);
 
 // ===================== SHOP VIEW (grid) =====================
 var shopGrid = document.getElementById('shop-grid');
@@ -67,6 +127,8 @@ function renderShop() {
     card.className = 'shop-card';
 
     var img = document.createElement('img');
+    // Below the fold on most screens, so let the browser defer it.
+    img.loading = 'lazy';
     img.src = p.id === 'five-panel-cap' ? 'images/five-panel-cap-black-thumb.jpg' : p.images[0];
     img.alt = p.name;
     card.appendChild(img);
@@ -164,6 +226,7 @@ function openDetail(productId, fromView, presetColorLabel) {
       detailThumbs.style.display = 'flex';
       images.forEach(function (src, i) {
         var t = document.createElement('img');
+        t.loading = 'lazy';
         t.src = src;
         t.className = i === 0 ? 'active' : '';
         t.addEventListener('click', function () {
@@ -325,6 +388,7 @@ function renderCart() {
     row.className = 'cart-line';
 
     var img = document.createElement('img');
+    img.loading = 'lazy';
     img.src = line.image;
     img.alt = line.name;
     row.appendChild(img);
