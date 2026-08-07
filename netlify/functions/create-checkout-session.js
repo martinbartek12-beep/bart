@@ -122,7 +122,25 @@ exports.handler = async function (event) {
     // Stripe collects the address; without this you get paid but have nowhere
     // to ship to.
     shipping_address_collection: {
-      allowed_countries: ['SK', 'CZ', 'AT', 'PL', 'HU', 'DE', 'FR', 'IT', 'ES', 'NL', 'BE']
+      // A customer whose country is missing here cannot complete an order, so
+      // this list is the real answer to "where do we ship?" — the INFO page is
+      // only a description of it. Keep the two in step.
+      //
+      // EU (27) + South Korea and Japan. Non-EU destinations need a customs
+      // declaration from you and may cost the customer import duty.
+      //
+      // The US is deliberately absent: the de minimis exemption ended in
+      // August 2025, so every parcel is now dutiable, needs an HS code, and the
+      // duty falls on the recipient — who can refuse delivery and leave you with
+      // the cost. Revisit once customs paperwork is a solved problem here.
+      allowed_countries: [
+        // --- EU ---
+        'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+        'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+        // --- Asia ---
+        'KR', 'JP'
+      ]
     }
   };
 
