@@ -101,25 +101,34 @@ nav a:hover { text-decoration: underline; }
   flex: 1;
   display: flex;
   align-items: center;
-
-  /* A real scroll container rather than a CSS animation: the auto-scroll is
-     driven from JS (see app.js), which means a finger swipe just works — the
-     browser handles the drag and the iOS momentum fling for free. A transform
-     animation would have fought the touch instead. */
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;          /* Firefox */
-  -ms-overflow-style: none;       /* old Edge */
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain; /* don't trigger back-navigation on swipe */
+  overflow: hidden;
+  touch-action: pan-y;            /* horizontal gestures are ours, vertical scrolls the page */
 }
 
-.carousel-wrap::-webkit-scrollbar { display: none; }
-
+/* The marquee is a CSS animation because the compositor runs it on the GPU and
+   it stays perfectly smooth. Dragging is layered on top by app.js: during a
+   drag the animation is switched off and a transform is set directly, then the
+   animation is restarted with a negative delay so it picks up from wherever the
+   finger let go. */
 .carousel-track {
   display: flex;
   gap: 16px;
   width: max-content;
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+}
+
+.carousel-track.paused { animation-play-state: paused; }
+
+/* set while dragging — no animation, app.js owns the transform */
+.carousel-track.dragging {
+  animation: none;
+  cursor: grabbing;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .carousel-card {
