@@ -265,6 +265,18 @@ var cartSummaryEl = document.getElementById('cart-summary');
 var cartSubtotalEl = document.getElementById('cart-subtotal');
 var checkoutBtn = document.getElementById('checkout-btn');
 var checkoutError = document.getElementById('checkout-error');
+var cartZoneSelect = document.getElementById('cart-zone-select');
+var cartShippingEl = document.getElementById('cart-shipping');
+var cartTotalEl = document.getElementById('cart-total');
+
+// Display only — the amount actually charged comes from the Stripe shipping rate
+// picked server-side for this zone. If you change a rate in Stripe, change it
+// here too, or the cart will quote one number and the checkout another.
+var SHIPPING_CENTS = {
+  local: 600,
+  europe: 1600,
+  asia: 3000
+};
 
 function goCart() { showView('cart'); lastView = 'cart'; }
 
@@ -384,7 +396,16 @@ function renderCart() {
   });
 
   cartSubtotalEl.textContent = formatEur(cartSubtotalCents());
+  renderTotals();
 }
+
+function renderTotals() {
+  var shipping = SHIPPING_CENTS[cartZoneSelect.value] || 0;
+  cartShippingEl.textContent = formatEur(shipping);
+  cartTotalEl.textContent = formatEur(cartSubtotalCents() + shipping);
+}
+
+cartZoneSelect.addEventListener('change', renderTotals);
 
 onCartChange(function () {
   renderCartCount();
@@ -408,6 +429,7 @@ checkoutBtn.addEventListener('click', function () {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      zone: cartZoneSelect.value,
       items: cart.map(function (l) { return { sku: l.sku, qty: l.qty }; })
     })
   })
