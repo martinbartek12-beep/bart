@@ -53,30 +53,47 @@ renderCarousel();
 // the finger drags the same scroll position the timer nudges along.
 
 var carouselWrap = document.querySelector('.carousel-wrap');
-var CAROUSEL_SPEED = 0.6;      // px per frame at 60fps ≈ 36 px/s
+var CAROUSEL_SPEED = 36;       // px per second
 var carouselPaused = false;
 var resumeTimer = null;
 var lastLoopPosition = 0;
+var lastFrameTime = 0;
 
-function stepCarousel() {
+// The scroll position is tracked here rather than read back from scrollLeft each
+// frame. Mobile browsers round scrollLeft to whole pixels, so a sub-pixel step
+// would round to zero every frame and the carousel would simply never move —
+// which is exactly what happened on phones. Accumulating in a float and writing
+// the rounded value out keeps the motion smooth everywhere.
+var carouselPos = 0;
+
+function stepCarousel(now) {
+  var elapsed = lastFrameTime ? (now - lastFrameTime) / 1000 : 0;
+  lastFrameTime = now;
+  // A tab left in the background can hand back a huge gap on return; clamp it so
+  // the carousel doesn't lurch forward.
+  if (elapsed > 0.1) elapsed = 0.1;
+
+  var half = track.scrollWidth / 2;
+
   // Only scroll while the home view is actually on screen — no point animating
   // behind the shop or cart, and it keeps a backgrounded tab cheap.
   if (!carouselPaused && document.body.classList.contains('view-home') && !document.hidden) {
-    carouselWrap.scrollLeft += CAROUSEL_SPEED;
-  }
+    carouselPos += CAROUSEL_SPEED * elapsed;
 
-  var half = track.scrollWidth / 2;
-  if (carouselWrap.scrollLeft >= half) {
-    // rewind by exactly one copy — visually identical, so the jump is invisible
-    carouselWrap.scrollLeft -= half;
-    lastLoopPosition -= half;
-  }
+    if (half > 0 && carouselPos >= half) {
+      // rewind by exactly one copy — visually identical, so the jump is invisible
+      carouselPos -= half;
+      lastLoopPosition -= half;
+    }
 
-  // The cap thumbnail cycles once per full rotation, as it did with the old
-  // animationiteration event.
-  if (carouselWrap.scrollLeft - lastLoopPosition >= half) {
-    lastLoopPosition = carouselWrap.scrollLeft;
-    cycleCapColor();
+    carouselWrap.scrollLeft = carouselPos;
+
+    // The cap thumbnail cycles once per full rotation, as it did with the old
+    // animationiteration event.
+    if (half > 0 && carouselPos - lastLoopPosition >= half) {
+      lastLoopPosition = carouselPos;
+      cycleCapColor();
+    }
   }
 
   requestAnimationFrame(stepCarousel);
@@ -97,7 +114,13 @@ function pauseCarousel() {
 // feels like the page is fighting the finger, especially during momentum.
 function resumeCarouselSoon(delay) {
   if (resumeTimer) clearTimeout(resumeTimer);
-  resumeTimer = setTimeout(function () { carouselPaused = false; }, delay || 1500);
+  resumeTimer = setTimeout(function () {
+    // Adopt wherever the finger left the carousel, otherwise the next frame
+    // would yank it back to where the timer thought it was.
+    carouselPos = carouselWrap.scrollLeft;
+    lastFrameTime = 0;
+    carouselPaused = false;
+  }, delay || 1500);
 }
 
 // Desktop: pause on hover so cards are easier to click.
