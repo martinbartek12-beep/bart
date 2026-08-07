@@ -516,6 +516,44 @@ nav a:hover { text-decoration: underline; }
   letter-spacing: 0.04em;
 }
 
+.cart-zone {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #000000;
+}
+
+.cart-zone-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.cart-zone-select {
+  font-family: inherit;
+  font-size: 13px;
+  width: 100%;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.cart-shipping-row {
+  margin-top: 16px;
+  font-weight: 400;
+}
+
+.cart-total-row {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #000000;
+  font-size: 16px;
+}
+
 .cart-shipping-note {
   font-size: 12px;
   color: #555555;
