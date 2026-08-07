@@ -40,105 +40,144 @@ function buildCard(p) {
 
 function renderCarousel() {
   track.innerHTML = '';
-  // cards twice in a row → translateX(-50%) animation creates a seamless infinite loop
+  // cards twice in a row → the auto-scroll can rewind by exactly one copy for a seamless loop
   PRODUCTS.forEach(function (p) { track.appendChild(buildCard(p)); });
   PRODUCTS.forEach(function (p) { track.appendChild(buildCard(p)); });
 }
 renderCarousel();
 
-// --- auto-scroll -----------------------------------------------------------
-// The track holds every product twice, so when the scroll passes the halfway
-// point we can jump back by exactly half the width and the seam is invisible.
-// Scrolling (rather than animating a transform) is what makes swiping work:
-// the finger drags the same scroll position the timer nudges along.
+// --- dragging the marquee ---------------------------------------------------
+// The scrolling itself is the CSS animation above, which the browser runs on the
+// GPU and keeps perfectly smooth. Dragging is layered on top: while a finger (or
+// mouse, or trackpad) is moving the carousel, the animation is turned off and
+// the transform is set directly; afterwards the animation restarts with a
+// negative delay so it continues from wherever the drag ended rather than
+// snapping back to the start.
 
 var carouselWrap = document.querySelector('.carousel-wrap');
-var CAROUSEL_SPEED = 36;       // px per second
-var carouselPaused = false;
+var MARQUEE_DURATION = 40;   // must match the animation duration in styles.css
+
+var dragging = false;
+var dragStartX = 0;
+var dragStartOffset = 0;
+var dragOffset = 0;
 var resumeTimer = null;
-var lastLoopPosition = 0;
-var lastFrameTime = 0;
 
-// The scroll position is tracked here rather than read back from scrollLeft each
-// frame. Mobile browsers round scrollLeft to whole pixels, so a sub-pixel step
-// would round to zero every frame and the carousel would simply never move —
-// which is exactly what happened on phones. Accumulating in a float and writing
-// the rounded value out keeps the motion smooth everywhere.
-var carouselPos = 0;
-
-function stepCarousel(now) {
-  var elapsed = lastFrameTime ? (now - lastFrameTime) / 1000 : 0;
-  lastFrameTime = now;
-  // A tab left in the background can hand back a huge gap on return; clamp it so
-  // the carousel doesn't lurch forward.
-  if (elapsed > 0.1) elapsed = 0.1;
-
-  var half = track.scrollWidth / 2;
-
-  // Only scroll while the home view is actually on screen — no point animating
-  // behind the shop or cart, and it keeps a backgrounded tab cheap.
-  if (!carouselPaused && document.body.classList.contains('view-home') && !document.hidden) {
-    carouselPos += CAROUSEL_SPEED * elapsed;
-
-    if (half > 0 && carouselPos >= half) {
-      // rewind by exactly one copy — visually identical, so the jump is invisible
-      carouselPos -= half;
-      lastLoopPosition -= half;
-    }
-
-    carouselWrap.scrollLeft = carouselPos;
-
-    // The cap thumbnail cycles once per full rotation, as it did with the old
-    // animationiteration event.
-    if (half > 0 && carouselPos - lastLoopPosition >= half) {
-      lastLoopPosition = carouselPos;
-      cycleCapColor();
-    }
-  }
-
-  requestAnimationFrame(stepCarousel);
+// One full loop is half the track, because every product is rendered twice.
+function loopWidth() {
+  return track.scrollWidth / 2;
 }
 
-function cycleCapColor() {
+// Where the marquee currently sits, in pixels, read straight off the transform
+// the browser has applied.
+function currentOffset() {
+  var t = getComputedStyle(track).transform;
+  if (!t || t === 'none') return 0;
+  var m = t.match(/matrix.*\((.+)\)/);
+  if (!m) return 0;
+  var parts = m[1].split(', ');
+  // translateX is the 5th value in matrix(), the 13th in matrix3d()
+  var x = parts.length === 6 ? parseFloat(parts[4]) : parseFloat(parts[12]);
+  return -x || 0;
+}
+
+function startDrag(clientX) {
+  if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+  dragStartOffset = currentOffset();
+  dragOffset = dragStartOffset;
+  dragStartX = clientX;
+  dragging = true;
+  track.classList.add('dragging');
+  track.style.transform = 'translateX(' + -dragOffset + 'px)';
+}
+
+function moveDrag(clientX) {
+  if (!dragging) return;
+  var loop = loopWidth();
+  // Dragging left (negative delta) advances the marquee, matching its direction.
+  dragOffset = dragStartOffset + (dragStartX - clientX);
+  // Keep it inside one loop so the transform never runs off the rendered cards.
+  if (loop > 0) dragOffset = ((dragOffset % loop) + loop) % loop;
+  track.style.transform = 'translateX(' + -dragOffset + 'px)';
+}
+
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  track.classList.remove('dragging');
+  resumeFrom(dragOffset);
+}
+
+// Restart the animation partway through, so it carries on from `offset`
+// instead of jumping back to zero.
+function resumeFrom(offset) {
+  var loop = loopWidth();
+  if (loop <= 0) return;
+  var progress = (((offset % loop) + loop) % loop) / loop;
+  track.style.transform = '';
+  track.style.animationDelay = -(progress * MARQUEE_DURATION) + 's';
+}
+
+// --- pointer (covers touch, mouse and pen) ---
+carouselWrap.addEventListener('pointerdown', function (e) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  startDrag(e.clientX);
+});
+
+carouselWrap.addEventListener('pointermove', function (e) {
+  if (!dragging) return;
+  e.preventDefault();   // don't let the browser text-select mid-drag
+  moveDrag(e.clientX);
+});
+
+window.addEventListener('pointerup', endDrag);
+window.addEventListener('pointercancel', endDrag);
+
+// A drag shouldn't also count as a click on the card underneath.
+carouselWrap.addEventListener('click', function (e) {
+  if (Math.abs(dragOffset - dragStartOffset) > 5) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}, true);
+
+// --- trackpad / wheel ---
+// Two-finger horizontal swipes arrive as wheel events with deltaX.
+carouselWrap.addEventListener('wheel', function (e) {
+  if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;  // vertical: let the page scroll
+  e.preventDefault();
+
+  if (resumeTimer) clearTimeout(resumeTimer);
+  var loop = loopWidth();
+  if (!track.classList.contains('dragging')) {
+    dragOffset = currentOffset();
+    track.classList.add('dragging');
+  }
+  dragOffset += e.deltaX;
+  if (loop > 0) dragOffset = ((dragOffset % loop) + loop) % loop;
+  track.style.transform = 'translateX(' + -dragOffset + 'px)';
+
+  // Wheel events have no "end", so resume once they stop arriving.
+  resumeTimer = setTimeout(function () {
+    track.classList.remove('dragging');
+    resumeFrom(dragOffset);
+  }, 250);
+}, { passive: false });
+
+// --- pause on hover, so cards are easier to click ---
+carouselWrap.addEventListener('mouseenter', function () {
+  if (!dragging) track.classList.add('paused');
+});
+carouselWrap.addEventListener('mouseleave', function () {
+  track.classList.remove('paused');
+});
+
+// The cap thumbnail cycles once per full rotation of the marquee.
+track.addEventListener('animationiteration', function () {
   currentCapColorIndex = (currentCapColorIndex + 1) % CAP_COLOR_CYCLE.length;
   var newSrc = CAP_THUMBS[CAP_COLOR_CYCLE[currentCapColorIndex]];
   document.querySelectorAll('.cap-carousel-img').forEach(function (img) { img.src = newSrc; });
-}
-
-function pauseCarousel() {
-  carouselPaused = true;
-  if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
-}
-
-// After a swipe, wait a moment before taking over again — resuming instantly
-// feels like the page is fighting the finger, especially during momentum.
-function resumeCarouselSoon(delay) {
-  if (resumeTimer) clearTimeout(resumeTimer);
-  resumeTimer = setTimeout(function () {
-    // Adopt wherever the finger left the carousel, otherwise the next frame
-    // would yank it back to where the timer thought it was.
-    carouselPos = carouselWrap.scrollLeft;
-    lastFrameTime = 0;
-    carouselPaused = false;
-  }, delay || 1500);
-}
-
-// Desktop: pause on hover so cards are easier to click.
-carouselWrap.addEventListener('mouseenter', pauseCarousel);
-carouselWrap.addEventListener('mouseleave', function () { resumeCarouselSoon(200); });
-
-// Touch: hold while the finger is down, then let momentum finish undisturbed.
-carouselWrap.addEventListener('touchstart', pauseCarousel, { passive: true });
-carouselWrap.addEventListener('touchend', function () { resumeCarouselSoon(1500); });
-carouselWrap.addEventListener('touchcancel', function () { resumeCarouselSoon(1500); });
-
-// Trackpad and mouse wheel horizontal scrolling counts as interaction too.
-carouselWrap.addEventListener('wheel', function () {
-  pauseCarousel();
-  resumeCarouselSoon(1500);
-}, { passive: true });
-
-requestAnimationFrame(stepCarousel);
+});
 
 // ===================== SHOP VIEW (grid) =====================
 var shopGrid = document.getElementById('shop-grid');
