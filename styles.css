@@ -104,8 +104,8 @@ nav a:hover { text-decoration: underline; }
   overflow: hidden;
   touch-action: pan-y;            /* horizontal gestures are ours, vertical scrolls the page */
 
-  /* Breathing room so a card's own border is never clipped by overflow when the
-     strip is short — on a phone the card can be taller than the space it sits in. */
+  /* padding-bottom is nudged by snapCarousel() in app.js to keep the leftover
+     space above and below the card an even number of pixels — see there. */
   padding: 2px 0;
 }
 
