@@ -167,6 +167,15 @@ nav a:hover { text-decoration: underline; }
   letter-spacing: 0.04em;
   border-top: 1px solid #000000;
   background: #ffffff;
+
+  /* Room for two lines whether the name needs them or not. Without this, a name
+     that wraps makes its card taller than the rest, and since the cards are
+     vertically centred one of them ends up on a half pixel — which shows as a
+     top border drawn at half thickness. Equal heights, equal borders. */
+  line-height: 1.35;
+  min-height: calc(2 * 1.35em + 28px);
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 900px) {
