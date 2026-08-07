@@ -108,12 +108,12 @@ function showView(name) {
 function goHome()    { showView('home');    lastView = 'home'; }
 function goShop()    { showView('shop');    lastView = 'shop'; }
 function goJourney() { showView('journey'); lastView = 'journey'; }
-function goAbout()   { showView('about');   lastView = 'about'; }
+function goInfo()    { showView('info');    lastView = 'info'; }
 
 function goBack() {
   if (lastView === 'shop') { goShop(); }
   else if (lastView === 'journey') { goJourney(); }
-  else if (lastView === 'about') { goAbout(); }
+  else if (lastView === 'info') { goInfo(); }
   else { goHome(); }
 }
 
