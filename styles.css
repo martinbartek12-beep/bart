@@ -1,4 +1,4 @@
-* {
+)* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -138,6 +138,12 @@ nav a:hover { text-decoration: underline; }
   border: 1px solid #000000;
   user-select: none;
   cursor: pointer;
+
+  /* The cards are vertically centred in the strip, so when the leftover space is
+     an odd number of pixels the card lands on a half pixel and the top border
+     renders thinner than the other three. Promoting the card to its own layer
+     makes the browser snap it to whole pixels, so all four sides match. */
+  transform: translateZ(0);
 }
 
 .carousel-card img {
