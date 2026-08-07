@@ -237,7 +237,27 @@
           <span>SUBTOTAL</span>
           <span id="cart-subtotal"></span>
         </div>
-        <div class="cart-shipping-note">Shipping calculated at checkout.</div>
+
+        <div class="cart-zone">
+          <label class="cart-zone-label" for="cart-zone-select">DELIVER TO</label>
+          <select id="cart-zone-select" class="cart-zone-select">
+            <option value="local">Czechia &amp; Slovakia</option>
+            <option value="europe">Rest of Europe</option>
+            <option value="asia">South Korea &amp; Japan</option>
+          </select>
+        </div>
+
+        <div class="cart-subtotal-row cart-shipping-row">
+          <span>SHIPPING</span>
+          <span id="cart-shipping"></span>
+        </div>
+
+        <div class="cart-subtotal-row cart-total-row">
+          <span>TOTAL</span>
+          <span id="cart-total"></span>
+        </div>
+
+        <div class="cart-shipping-note">Final shipping is confirmed at checkout.</div>
         <button type="button" class="checkout-btn" id="checkout-btn">CHECKOUT</button>
         <div id="checkout-error" class="checkout-error"></div>
       </div>
