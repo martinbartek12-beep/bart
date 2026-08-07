@@ -101,21 +101,25 @@ nav a:hover { text-decoration: underline; }
   flex: 1;
   display: flex;
   align-items: center;
-  overflow: hidden;
+
+  /* A real scroll container rather than a CSS animation: the auto-scroll is
+     driven from JS (see app.js), which means a finger swipe just works — the
+     browser handles the drag and the iOS momentum fling for free. A transform
+     animation would have fought the touch instead. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* old Edge */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain; /* don't trigger back-navigation on swipe */
 }
+
+.carousel-wrap::-webkit-scrollbar { display: none; }
 
 .carousel-track {
   display: flex;
   gap: 16px;
   width: max-content;
-  animation: marquee 40s linear infinite;
-}
-
-.carousel-track.paused { animation-play-state: paused; }
-
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
 }
 
 .carousel-card {
