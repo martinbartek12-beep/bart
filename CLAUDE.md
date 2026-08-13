@@ -71,6 +71,12 @@ shareable product links. Hash routing is planned but not yet done.
 
 ## Pages
 
+THANK YOU is not in the nav — it only appears when Stripe returns the customer
+to `/?checkout=success`. It is also the only place `cartClear()` is called:
+emptying the cart when CHECKOUT is pressed would wipe someone's basket the
+moment they backed out on Stripe's page. `?checkout=cancelled` drops them back
+into the cart with everything intact.
+
 THE JOURNEY holds the brand story (founders, Seoul pop-ups, move to Prague).
 INFO (formerly "About") is **hidden from the nav** — the shipping table moved to
 the cart, which left only a "coming soon" line, and an empty tab looks worse than
