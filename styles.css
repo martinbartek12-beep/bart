@@ -35,7 +35,8 @@ button { font-family: inherit; }
 #journey-view,
 #info-view,
 #detail-view,
-#cart-view { display: none; }
+#cart-view,
+#thanks-view { display: none; }
 
 body.view-home    #home-view    { display: flex; }
 body.view-shop    #shop-view    { display: block; }
@@ -43,6 +44,7 @@ body.view-journey #journey-view { display: block; }
 body.view-info    #info-view    { display: block; }
 body.view-detail  #detail-view  { display: block; }
 body.view-cart    #cart-view    { display: block; }
+body.view-thanks  #thanks-view  { display: block; }
 
 body.view-home footer { display: none; }
 
@@ -104,8 +106,6 @@ nav a:hover { text-decoration: underline; }
   overflow: hidden;
   touch-action: pan-y;            /* horizontal gestures are ours, vertical scrolls the page */
 
-  /* padding-bottom is nudged by snapCarousel() in app.js to keep the leftover
-     space above and below the card an even number of pixels — see there. */
   padding: 2px 0;
 }
 
@@ -143,11 +143,6 @@ nav a:hover { text-decoration: underline; }
   user-select: none;
   cursor: pointer;
 
-  /* The cards are vertically centred in the strip, so when the leftover space is
-     an odd number of pixels the card lands on a half pixel and the top border
-     renders thinner than the other three. Promoting the card to its own layer
-     makes the browser snap it to whole pixels, so all four sides match. */
-  transform: translateZ(0);
 }
 
 .carousel-card img {
@@ -642,6 +637,115 @@ nav a:hover { text-decoration: underline; }
   .cart-remove     { grid-area: remove; justify-self: end; }
 }
 
+/* ================= THANK YOU VIEW ================= */
+/* Styled as a paper receipt: the one piece of the site that gets to feel like
+   an object rather than a page. Same brutalist rules — black on white, hard
+   lines, Courier — just arranged like something you'd find in the box. */
+
+#thanks-view {
+  flex: 1 0 auto;
+}
+
+.thanks-content {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.thanks-receipt {
+  position: relative;
+  border: 1px solid #000000;
+  padding: 40px 32px 32px;
+  background: #ffffff;
+}
+
+.thanks-title {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.thanks-subtitle {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+}
+
+/* Perforation, the way a receipt tears */
+.thanks-rule {
+  border-top: 1px dashed #000000;
+  margin: 24px 0;
+}
+
+.thanks-steps-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.thanks-steps {
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.thanks-steps li {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.thanks-steps li:last-child { margin-bottom: 0; }
+
+.thanks-num {
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+
+.thanks-note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555555;
+}
+
+.thanks-signoff {
+  margin-top: 28px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.thanks-btn {
+  font-family: inherit;
+  margin-top: 24px;
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  text-align: center;
+  background: #000000;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid #000000;
+  cursor: pointer;
+}
+
+.thanks-btn:hover { background: #ffffff; color: #000000; }
+
+@media (max-width: 600px) {
+  .thanks-content { padding: 32px 16px 56px; }
+  .thanks-receipt { padding: 32px 20px 24px; }
+  .thanks-title { font-size: 32px; }
+}
+
 /* ================= THE JOURNEY VIEW ================= */
 
 #journey-view {
@@ -764,50 +868,6 @@ nav a:hover { text-decoration: underline; }
   margin-bottom: 16px;
   border-bottom: 1px solid #000000;
   padding-bottom: 8px;
-}
-
-.shipping-region {
-  margin-bottom: 24px;
-}
-
-.shipping-region-name {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  background: #000000;
-  color: #ffffff;
-  padding: 8px 12px;
-}
-
-.shipping-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 12px;
-  border-bottom: 1px solid #cccccc;
-  font-size: 13px;
-}
-
-.shipping-row:last-child { border-bottom: 1px solid #000000; }
-
-.shipping-method {
-  flex: 1;
-}
-
-.shipping-prices {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.shipping-prices .base {
-  font-weight: 700;
-}
-
-.shipping-prices .extra {
-  color: #666666;
-  font-size: 12px;
-  margin-top: 2px;
 }
 
 .info-text {
