@@ -406,6 +406,7 @@ var SHIPPING_CENTS = {
 };
 
 function goCart() { showView('cart'); lastView = 'cart'; }
+function goThanks() { showView('thanks'); lastView = 'shop'; }
 
 // ADD TO CART now genuinely adds. The variant the customer is looking at is read
 // from selectedColorLabel / selectedSizeLabel, so size finally survives the click.
@@ -583,6 +584,32 @@ checkoutBtn.addEventListener('click', function () {
 
 // ===================== INIT =====================
 document.getElementById('year').textContent = new Date().getFullYear();
-renderCartCount();
-renderCart();
-goHome();
+
+// Stripe sends the customer back to SITE_URL/?checkout=success or ?checkout=cancelled
+// (see success_url / cancel_url in the Function). There's no routing yet, so this
+// is read straight off the query string on load.
+//
+// This is also the only place the cart is emptied. Doing it when the CHECKOUT
+// button is pressed would lose someone's basket the moment they changed their
+// mind on Stripe's page — so it waits until the payment actually went through.
+var checkoutResult = new URLSearchParams(window.location.search).get('checkout');
+
+if (checkoutResult === 'success') {
+  cartClear();
+  // Strip the parameter so a refresh doesn't show the thank-you page again for
+  // an order that's long finished.
+  window.history.replaceState({}, '', window.location.pathname);
+  renderCartCount();
+  renderCart();
+  goThanks();
+} else if (checkoutResult === 'cancelled') {
+  // Nothing was charged and the cart is untouched — put them back where they were.
+  window.history.replaceState({}, '', window.location.pathname);
+  renderCartCount();
+  renderCart();
+  goCart();
+} else {
+  renderCartCount();
+  renderCart();
+  goHome();
+}
