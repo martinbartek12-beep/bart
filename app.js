@@ -544,7 +544,9 @@ onCartChange(function () {
 // The browser sends SKUs and quantities only. The serverless function maps each
 // SKU to a Stripe price ID and builds the Checkout Session, so prices can't be
 // tampered with client-side. Shipping is picked in Stripe Checkout, not here.
-var CHECKOUT_ENDPOINT = '/.netlify/functions/create-checkout-session';
+// Cloudflare Pages Functions route by file path: the handler lives at
+// functions/api/create-checkout-session.js, so it answers here.
+var CHECKOUT_ENDPOINT = '/api/create-checkout-session';
 
 checkoutBtn.addEventListener('click', function () {
   if (cart.length === 0) return;
