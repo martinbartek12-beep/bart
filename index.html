@@ -16,10 +16,7 @@
     <nav>
       <a onclick="goShop()">SHOP</a>
       <a onclick="goJourney()">THE JOURNEY</a>
-      <!-- INFO is hidden until it has real content (returns policy, contact,
-           seller details). The view below is intact — put this line back to
-           bring it into the nav. -->
-      <!-- <a onclick="goInfo()">INFO</a> -->
+      <a onclick="goInfo()">INFO</a>
       <a onclick="goCart()">CART <span id="cart-count"></span></a>
     </nav>
   </header>
@@ -111,22 +108,56 @@
   </div>
 
   <!-- ============================================================ -->
-  <!-- INFO VIEW — currently unreachable: the nav link above is commented out -->
+  <!-- ============================================================ -->
+  <!-- INFO VIEW — returns, complaints, privacy                      -->
   <!-- ============================================================ -->
   <div id="info-view">
-
 
     <div class="info-content">
 
       <div class="info-title">Info</div>
 
       <div class="info-section">
-        <div class="info-section-title">Returns</div>
-        <div class="info-text info-placeholder-note">Return policy — coming soon.</div>
+        <div class="info-section-title">Returns &amp; cancellation</div>
+        <div class="info-text">
+          <p>You can cancel your order within <strong>14 days</strong> of receiving it, without giving a reason. If your order arrived in several parcels, the 14 days start from the day the last one reached you.</p>
+          <p>To cancel, e-mail <a href="mailto:martinbartek12@gmail.com">martinbartek12@gmail.com</a> before the 14 days are up. Just tell us your order number and that you want to cancel — no form to fill in.</p>
+          <p>Send the goods back within 14 days of telling us. You pay the return postage. Items should come back unworn, unwashed and with any tags still on; if they come back damaged or clearly used, we may reduce the refund to reflect that.</p>
+          <p>We refund the full price plus the cheapest standard shipping we offer to your country, within 14 days of your cancellation — though we may wait until the goods reach us. The money goes back the same way it came in.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">Faulty goods</div>
+        <div class="info-text">
+          <p>If something is faulty or not what you ordered, you have <strong>two years</strong> to complain. Write to <a href="mailto:martinbartek12@gmail.com">martinbartek12@gmail.com</a> with your order number and a photo, and we will sort out a repair, a replacement or a refund.</p>
+          <p>This is separate from the 14-day cancellation above and applies even after it has expired.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">Pre-orders</div>
+        <div class="info-text">
+          <p>Some items are sold as pre-orders and are marked as such. Payment is taken when you order and production takes 2–3 weeks. Your 14-day cancellation right starts when the goods arrive, not when you pay — so you can still change your mind after delivery.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">Your data</div>
+        <div class="info-text">
+          <p>To send you an order we need your name, address and e-mail. Payments run through <a href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe</a>, who process your card details — we never see or store your card number.</p>
+          <p>We keep order records as long as tax and accounting rules require, and we don't sell your data or pass it to anyone beyond the courier and the payment provider. Want to know what we hold on you, or have it deleted? E-mail <a href="mailto:martinbartek12@gmail.com">martinbartek12@gmail.com</a>.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">Disputes</div>
+        <div class="info-text">
+          <p>If we can't sort something out between us, you can turn to the Czech Trade Inspection Authority (Česká obchodní inspekce, <a href="https://www.coi.cz" target="_blank" rel="noopener">coi.cz</a>) for out-of-court settlement, or use the EU's online dispute resolution platform.</p>
+        </div>
       </div>
 
     </div>
-
 
   </div>
 
@@ -262,8 +293,29 @@
   <!-- SHARED FOOTER (was duplicated in four views; hidden on home)  -->
   <!-- ============================================================ -->
   <footer>
-    <div>&copy; <span id="year"></span> havefungoods</div>
-    <div>ALL RIGHTS RESERVED</div>
+    <div class="footer-line">&copy; <span id="year"></span> havefungoods &nbsp;|&nbsp; ALL RIGHTS RESERVED</div>
+
+    <!-- Seller identification. Required for distance selling in the EU: the
+         customer has to see who they are buying from and where to send a
+         complaint or a return, without hunting for it.
+         Martin Bártek trades as a sole trader (OSVČ), so there is no separate
+         "represented by" line — the person and the business are the same
+         entity. IČO checksum verified. -->
+    <div class="footer-legal">
+      <div>
+        Seller: Martin Bártek, trading as havefungoods
+        &nbsp;|&nbsp; E-mail: martinbartek12@gmail.com
+      </div>
+      <div>
+        Registered office: V Rovinách 868, 140 00 Praha 4, Czech Republic
+      </div>
+      <div>
+        Company ID (IČO): 21969329 &nbsp;|&nbsp; Not registered for VAT
+      </div>
+      <div>
+        Sole trader registered in the Czech Trade Register
+      </div>
+    </div>
   </footer>
 
   <!-- order matters: products.js defines PRODUCTS, cart.js reads it on load,
