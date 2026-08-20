@@ -98,13 +98,12 @@ Anyone maintaining this should get it checked before relying on it.
 
 ## Footer
 
-The footer carries the seller identification required for distance selling in
-the EU — legal name, representative, address, company ID, VAT status, register
-entry, contact e-mail. It appears on every view except home. All values are
-`[PLACEHOLDER]` until the client supplies real data; shipping with placeholders
-visible would be worse than having nothing there.
-
-The withdrawal right lives on INFO, which is back in the nav.
+The footer carries the copyright line and the seller identification required for
+distance selling in the EU — legal name, address, company ID, VAT status,
+register entry, contact e-mail. It renders on **INFO only**, at the client's
+request; INFO sits in the nav on every view, so the details stay one click away
+from anywhere, which is what the rule asks for. Do not scatter it back across
+the other views. The withdrawal right lives on INFO, which is back in the nav.
 
 ## Cart
 
