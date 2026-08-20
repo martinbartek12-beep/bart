@@ -55,6 +55,15 @@ Changing one needs a redeploy to take effect:
 | `STRIPE_SHIPPING_RATE_EU` | `shr_...` Europe, 16 EUR |
 | `STRIPE_SHIPPING_RATE_ASIA` | `shr_...` Asia, 30 EUR |
 
+Adding a product means three things, all of which must agree: an entry in
+`PRODUCTS` (`products.js`), a matching SKU in the `PRICES` map inside the
+Function, and the images in `images/`. A SKU is
+`productId::colour::size` — `-` where a product has no colours. Get one
+character wrong and the item adds to the cart fine but checkout refuses it.
+
+Optional per-product fields: `badge` (short label on the shop card) and `note`
+(inverted block above the buy button). Used for the cap's pre-order warning.
+
 Shipping amounts are duplicated in `SHIPPING_CENTS` in `app.js` for the cart
 display. Change a rate in Stripe and you must change it there too, or the cart
 quotes one number and the checkout charges another.
