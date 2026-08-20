@@ -430,17 +430,16 @@ nav a:hover { text-decoration: underline; }
 .buy-btn:hover { background: #ffffff; color: #000000; }
 .buy-btn:disabled { cursor: default; background: #ffffff; color: #000000; }
 
-/* Pre-order / made-to-order warning. Inverted so it reads as a statement of
-   fact the customer must not miss, not decoration. */
+/* Pre-order note. Plain black text, no box: it still has to be read before the
+   customer buys, but the inverted panel was pulling the eye away from the buy
+   button sitting right under it. */
 .detail-product-note {
   display: none;
   margin-top: 24px;
-  padding: 12px 14px;
-  background: #000000;
-  color: #ffffff;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.6;
   letter-spacing: 0.02em;
+  color: #000000;
 }
 
 .shop-card-badge {
