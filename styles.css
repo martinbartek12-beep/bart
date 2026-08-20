@@ -46,7 +46,12 @@ body.view-detail  #detail-view  { display: block; }
 body.view-cart    #cart-view    { display: block; }
 body.view-thanks  #thanks-view  { display: block; }
 
-body.view-home footer { display: none; }
+/* The footer lives on INFO only. It carries the copyright line and the seller
+   identification, which the customer must be able to find — INFO is in the nav
+   from every view, so that requirement is met without repeating the block under
+   every page. */
+footer { display: none; }
+body.view-info footer { display: block; }
 
 /* ================= HEADER ================= */
 
