@@ -16,8 +16,8 @@ var PRODUCTS = [
     // so keep a concrete timeframe in here — never just "soon".
     badge: 'PRE-ORDER',
     note: 'PRE-ORDER: This item is currently available for pre-order. Please allow 2-3 weeks for production and delivery. Payment is taken now. Good things take time!',
-    price: '30,00 €',
-    priceCents: 3000,
+    price: '45,00 €',
+    priceCents: 4500,
     description: '5-panel cap with embroidered logo.',
     images: ['images/five-panel-cap-black-1.jpg', 'images/five-panel-cap-black-2.jpg'],
     sizes: [
