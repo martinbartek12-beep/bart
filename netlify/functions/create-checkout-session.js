@@ -1,21 +1,77 @@
 // ===================== CREATE CHECKOUT SESSION =====================
 //
-// POST { items: [{ sku, qty }] }  ->  { url }
+// Cloudflare Pages Function. The file path is the route: this file lives at
+// functions/api/create-checkout-session.js, so it answers POSTs to
+//   /api/create-checkout-session
 //
-// Deliberately written against the Stripe REST API with plain fetch, so the
-// project stays dependency-free — no stripe npm package, no package.json, no
-// build step. Needs Node 18+ for global fetch (Netlify's default runtime is
-// newer than that; if you pin an older one this will break).
+// POST { zone, items: [{ sku, qty }] }  ->  { url }
 //
-// Environment variables (Netlify -> Site settings -> Environment variables):
+// Written against the Stripe REST API with plain fetch, so the project stays
+// dependency-free — no stripe npm package, no package.json, no build step.
+//
+// Environment variables (Cloudflare dashboard -> the project -> Settings ->
+// Variables and Secrets). They must exist for BOTH Production and Preview, and
+// a redeploy is needed after changing them:
 //   STRIPE_SECRET_KEY   required, sk_test_... while testing, sk_live_... later
-//   SITE_URL            required, e.g. https://havefungoods.netlify.app
-//   STRIPE_SHIPPING_RATE_EU / _ASIA / _LOCAL   optional, shr_... IDs
+//   SITE_URL            required, e.g. https://bart.pages.dev — no trailing slash
+//   STRIPE_SHIPPING_RATE_LOCAL / _EU / _ASIA   required, shr_... IDs
 //
-// NEVER put the secret key in any file in this repo. It goes in Netlify's env
-// vars only. If it ever leaks, roll it in the Stripe dashboard immediately.
+// NEVER put the secret key in this file or anywhere else in the repo. Mark it as
+// a secret in the dashboard. If it ever leaks, roll it in Stripe immediately.
 
-var { PRICES, describeSku } = require('./prices');
+
+// ===================== SKU -> STRIPE PRICE ID =====================
+//
+// This map is the price authority. The browser only sends a SKU and a quantity;
+// whatever it claims a thing costs is ignored. A SKU that is not listed here is
+// refused. SKUs are built by cartSku() in cart.js as
+//   productId::colorLabel::sizeLabel     ("-" when the product has no colours)
+//
+// These are SANDBOX (test) prices and only work with an sk_test_ key. Going live
+// means creating the products again in live mode and swapping every ID here —
+// test and live are separate worlds.
+//
+// The three tees share one price across sizes, so L and XL point at the same ID.
+// The size still reaches the order via the session metadata below. Sold-out
+// variants are deliberately absent: M is sold out on all three tees.
+//
+// (This lived in its own file on Netlify. It is inlined here because everything
+// inside functions/ becomes a route on Cloudflare, and a stray prices.js would
+// have been reachable over the web.)
+
+var PRICES = {
+  // --- Blue T-shirt (35,00 €) ---
+  'blue-t-shirt::-::L': 'price_1U1QRHLiByPHkozDtKuSjrUt',
+  'blue-t-shirt::-::XL': 'price_1U1QRHLiByPHkozDtKuSjrUt',
+
+  // --- 500-chicken fingies tee (35,00 €) ---
+  '500-chicken-fingies::-::L': 'price_1U1QQjLiByPHkozDBhTAC3Ry',
+
+  // --- chicken a dip tee (35,00 €) ---
+  'chicken-a-dip-tee::-::L': 'price_1U1QQFLiByPHkozDVy0cRPHV',
+
+  // --- Camo hoodie green/yellow (75,00 €) ---
+  'camo-hoodie-green-yellow::-::ONE SIZE': 'price_1U1QPgLiByPHkozDygG3ORSO',
+
+  // --- reversible beanie (28,00 €) ---
+  'reversible-beanie::-::ONE SIZE': 'price_1U1QOpLiByPHkozD5RynmpCq',
+
+  // --- 5-Panel Cap (45,00 €), one price per colour ---
+  'five-panel-cap::Black::ONE SIZE': 'price_1U6UeTLiByPHkozDc672I9vT',
+  'five-panel-cap::Olive Green::ONE SIZE': 'price_1U6UopLiByPHkozDTCiNaIpO',
+  'five-panel-cap::Chilli Red::ONE SIZE': 'price_1U6UjfLiByPHkozDPVlTBd4d'
+};
+
+// Split a SKU back into readable parts, so the order in Stripe shows the size
+// instead of you having to decode "blue-t-shirt::-::L" by eye.
+function describeSku(sku) {
+  var parts = sku.split('::');
+  return {
+    productId: parts[0] || '',
+    color: parts[1] && parts[1] !== '-' ? parts[1] : '',
+    size: parts[2] && parts[2] !== '-' ? parts[2] : ''
+  };
+}
 
 var MAX_QTY_PER_LINE = 10;
 var MAX_LINES = 20;
@@ -37,21 +93,23 @@ function formEncode(obj, prefix, out) {
   return out;
 }
 
-function json(statusCode, body) {
-  return {
-    statusCode: statusCode,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  };
+// Cloudflare works with the standard Response object rather than Netlify's
+// { statusCode, headers, body } shape.
+function json(status, body) {
+  return new Response(JSON.stringify(body), {
+    status: status,
+    headers: { 'Content-Type': 'application/json' }
+  });
 }
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== 'POST') {
-    return json(405, { error: 'Method not allowed' });
-  }
+// onRequestPost only runs for POST, so no method check is needed. onRequest
+// below catches everything else.
+export async function onRequestPost(context) {
+  var request = context.request;
+  var env = context.env;
 
-  var secretKey = process.env.STRIPE_SECRET_KEY;
-  var siteUrl = process.env.SITE_URL;
+  var secretKey = env.STRIPE_SECRET_KEY;
+  var siteUrl = env.SITE_URL;
   if (!secretKey || !siteUrl) {
     // Log the detail, return something vague — config problems are not the
     // customer's business and the message would end up on screen.
@@ -61,7 +119,7 @@ exports.handler = async function (event) {
 
   var payload;
   try {
-    payload = JSON.parse(event.body || '{}');
+    payload = await request.json();
   } catch (e) {
     return json(400, { error: 'Malformed request' });
   }
@@ -111,11 +169,11 @@ exports.handler = async function (event) {
   // chosen zone and the delivery address cannot disagree.
   var ZONES = {
     local: {
-      rate: process.env.STRIPE_SHIPPING_RATE_LOCAL,
+      rate: env.STRIPE_SHIPPING_RATE_LOCAL,
       countries: ['CZ', 'SK']
     },
     europe: {
-      rate: process.env.STRIPE_SHIPPING_RATE_EU,
+      rate: env.STRIPE_SHIPPING_RATE_EU,
       countries: [
         'AT', 'BE', 'BG', 'HR', 'CY', 'DK', 'EE', 'FI', 'FR', 'DE',
         'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL',
@@ -123,7 +181,7 @@ exports.handler = async function (event) {
       ]
     },
     asia: {
-      rate: process.env.STRIPE_SHIPPING_RATE_ASIA,
+      rate: env.STRIPE_SHIPPING_RATE_ASIA,
       countries: ['KR', 'JP']
     }
   };
@@ -182,4 +240,7 @@ exports.handler = async function (event) {
     console.error('Checkout request failed:', err);
     return json(502, { error: 'Could not reach the payment provider' });
   }
-};
+}
+// Only onRequestPost is exported on purpose. Cloudflare answers other methods
+// with a 405 by itself, and exporting a catch-all onRequest alongside it risks
+// the catch-all winning and swallowing every checkout.
