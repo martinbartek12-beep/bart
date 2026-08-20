@@ -11,6 +11,11 @@ var PRODUCTS = [
   {
     id: 'five-panel-cap',
     name: '5-Panel Cap',
+    // Shown as a badge on the shop card and above the buy button. Under EU
+    // consumer law a pre-order has to tell the customer when it will arrive,
+    // so keep a concrete timeframe in here — never just "soon".
+    badge: 'PRE-ORDER',
+    note: 'PRE-ORDER: This item is currently available for pre-order. Please allow 2-3 weeks for production and delivery. Payment is taken now. Good things take time!',
     price: '30,00 €',
     priceCents: 3000,
     description: '5-panel cap with embroidered logo.',
