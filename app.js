@@ -198,6 +198,13 @@ function renderShop() {
     var info = document.createElement('div');
     info.className = 'shop-card-info';
 
+    if (p.badge) {
+      var badgeEl = document.createElement('div');
+      badgeEl.className = 'shop-card-badge';
+      badgeEl.textContent = p.badge;
+      info.appendChild(badgeEl);
+    }
+
     var nameEl = document.createElement('div');
     nameEl.className = 'shop-card-name';
     nameEl.textContent = p.name;
@@ -249,6 +256,7 @@ var detailThumbs = document.getElementById('detail-thumbs');
 var detailName = document.getElementById('detail-name');
 var detailPrice = document.getElementById('detail-price');
 var detailDescription = document.getElementById('detail-description');
+var detailProductNote = document.getElementById('detail-product-note');
 var sizeOptions = document.getElementById('size-options');
 var sizeBlock = document.getElementById('size-block');
 var colorOptions = document.getElementById('color-options');
@@ -273,6 +281,13 @@ function openDetail(productId, fromView, presetColorLabel) {
 
   detailName.textContent = p.name;
   detailPrice.textContent = p.price;
+
+  if (p.note) {
+    detailProductNote.style.display = 'block';
+    detailProductNote.textContent = p.note;
+  } else {
+    detailProductNote.style.display = 'none';
+  }
 
   if (p.description) {
     detailDescription.style.display = 'block';
