@@ -87,10 +87,24 @@ moment they backed out on Stripe's page. `?checkout=cancelled` drops them back
 into the cart with everything intact.
 
 THE JOURNEY holds the brand story (founders, Seoul pop-ups, move to Prague).
-INFO (formerly "About") is **hidden from the nav** — the shipping table moved to
-the cart, which left only a "coming soon" line, and an empty tab looks worse than
-none. The view and goInfo() still exist; uncomment the nav link in index.html to
-bring it back once it has returns policy, contact and seller details.
+INFO (formerly "About") is back in the nav and holds returns/cancellation, faulty
+goods, pre-orders, data handling and disputes. Shipping rates are deliberately
+not repeated here — they live in the cart, where the customer needs them.
+
+**The text is a draft, not legal advice.** It was written to match Czech and EU
+distance-selling rules as they stood in 2026 (14-day withdrawal, 2-year
+conformity, ČOI as the ADR body), but it has not been reviewed by a lawyer.
+Anyone maintaining this should get it checked before relying on it.
+
+## Footer
+
+The footer carries the seller identification required for distance selling in
+the EU — legal name, representative, address, company ID, VAT status, register
+entry, contact e-mail. It appears on every view except home. All values are
+`[PLACEHOLDER]` until the client supplies real data; shipping with placeholders
+visible would be worse than having nothing there.
+
+The withdrawal right lives on INFO, which is back in the nav.
 
 ## Cart
 
@@ -115,23 +129,26 @@ sold out since the customer's last visit is dropped rather than reaching checkou
    IDs and the key is `sk_test_`. Going live means recreating the products and
    the three shipping rates in live mode, swapping every ID, and switching the
    key — test and live share nothing.
-2. **Legal texts are missing** — returns policy, terms, GDPR, and above all
-   seller identification. Nothing on the site says who is selling. Legally
-   required before taking real money. Client's responsibility; INFO is where
-   they go, and unhiding that nav link is the last step.
-3. **Flat shipping rates are a compromise.** The client wanted base + per extra
+2. **The trade licence is suspended.** Martin's živnost was paused at the time
+   of writing, and selling on a suspended licence is unauthorised trading.
+   Nothing goes live — no `sk_live_` key, no domain switch — until it is
+   reactivated. Everything else can be finished in test mode meanwhile.
+3. **Legal text is an unreviewed draft.** INFO covers withdrawal, faulty goods,
+   pre-orders, data and disputes; the footer carries seller identification.
+   None of it has been checked by a lawyer.
+4. **Flat shipping rates are a compromise.** The client wanted base + per extra
    item; Stripe flat rates cannot express that, so one price per zone was chosen
    (6 / 16 / 30 EUR). Multi-item orders lose money on postage. Revisit if the
    order mix turns out to skew large.
-4. **US and Canada are excluded on purpose.** The US de minimis exemption ended
+5. **US and Canada are excluded on purpose.** The US de minimis exemption ended
    in August 2025, so every parcel is dutiable and a refused delivery lands the
    cost on the seller. Not an oversight — do not "fix" the country list.
-5. `stripeLink` still sits in `products.js` from the Payment Links era. Nothing
+6. `stripeLink` still sits in `products.js` from the Payment Links era. Nothing
    reads it. Safe to delete.
-6. Nav items are `<a onclick>` with no href — not keyboard accessible.
+7. Nav items are `<a onclick>` with no href — not keyboard accessible.
    Planned fix: `<button>`. Now a single place in the shared header.
-7. No stock tracking. When Big Cartel is switched off, nothing stops a sold-out
+8. No stock tracking. When Big Cartel is switched off, nothing stops a sold-out
    item being ordered. Sold-out sizes are hardcoded in `products.js`.
-8. Images are lazy-loaded and resized to 1200px, but there is no `srcset`, so
+9. Images are lazy-loaded and resized to 1200px, but there is no `srcset`, so
    phones download desktop-sized files.
-9. No hash routing, so no shareable product links and refresh always lands home.
+10. No hash routing, so no shareable product links and refresh always lands home.
