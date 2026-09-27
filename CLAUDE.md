@@ -49,7 +49,7 @@ Changing one needs a redeploy to take effect:
 
 | Variable | Value |
 |---|---|
-| `STRIPE_SECRET_KEY` | `sk_test_...` (mark as Secret) |
+| `STRIPE_SECRET_KEY` | `sk_live_...` (mark as Secret) |
 | `SITE_URL` | site URL, no trailing slash |
 | `STRIPE_SHIPPING_RATE_LOCAL` | `shr_...` CZ/SK, 6 EUR |
 | `STRIPE_SHIPPING_RATE_EU` | `shr_...` Europe, 16 EUR |
@@ -124,30 +124,27 @@ sold out since the customer's last visit is dropped rather than reaching checkou
 
 ## Known open work (do not "fix" silently — these are tracked)
 
-1. **Everything is still in Stripe test mode.** The `PRICES` map holds sandbox
-   IDs and the key is `sk_test_`. Going live means recreating the products and
-   the three shipping rates in live mode, swapping every ID, and switching the
-   key — test and live share nothing.
-2. **The trade licence is suspended.** Martin's živnost was paused at the time
-   of writing, and selling on a suspended licence is unauthorised trading.
-   Nothing goes live — no `sk_live_` key, no domain switch — until it is
-   reactivated. Everything else can be finished in test mode meanwhile.
-3. **Legal text is an unreviewed draft.** INFO covers withdrawal, faulty goods,
+1. **The `PRICES` map now holds LIVE Stripe IDs.** The caps were recreated in
+   live mode at 45 EUR; the other six products have existed in live since July.
+   The function therefore needs `sk_live_` in Cloudflare — with the old
+   `sk_test_` key still set, every checkout fails. The three live shipping rates
+   must be created and their `shr_` IDs set as env vars too.
+2. **Legal text is an unreviewed draft.** INFO covers withdrawal, faulty goods,
    pre-orders, data and disputes; the footer carries seller identification.
    None of it has been checked by a lawyer.
-4. **Flat shipping rates are a compromise.** The client wanted base + per extra
+3. **Flat shipping rates are a compromise.** The client wanted base + per extra
    item; Stripe flat rates cannot express that, so one price per zone was chosen
    (6 / 16 / 30 EUR). Multi-item orders lose money on postage. Revisit if the
    order mix turns out to skew large.
-5. **US and Canada are excluded on purpose.** The US de minimis exemption ended
+4. **US and Canada are excluded on purpose.** The US de minimis exemption ended
    in August 2025, so every parcel is dutiable and a refused delivery lands the
    cost on the seller. Not an oversight — do not "fix" the country list.
-6. `stripeLink` still sits in `products.js` from the Payment Links era. Nothing
+5. `stripeLink` still sits in `products.js` from the Payment Links era. Nothing
    reads it. Safe to delete.
-7. Nav items are `<a onclick>` with no href — not keyboard accessible.
+6. Nav items are `<a onclick>` with no href — not keyboard accessible.
    Planned fix: `<button>`. Now a single place in the shared header.
-8. No stock tracking. When Big Cartel is switched off, nothing stops a sold-out
+7. No stock tracking. When Big Cartel is switched off, nothing stops a sold-out
    item being ordered. Sold-out sizes are hardcoded in `products.js`.
-9. Images are lazy-loaded and resized to 1200px, but there is no `srcset`, so
+8. Images are lazy-loaded and resized to 1200px, but there is no `srcset`, so
    phones download desktop-sized files.
-10. No hash routing, so no shareable product links and refresh always lands home.
+9. No hash routing, so no shareable product links and refresh always lands home.
