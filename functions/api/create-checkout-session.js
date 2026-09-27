@@ -27,9 +27,9 @@
 // refused. SKUs are built by cartSku() in cart.js as
 //   productId::colorLabel::sizeLabel     ("-" when the product has no colours)
 //
-// These are SANDBOX (test) prices and only work with an sk_test_ key. Going live
-// means creating the products again in live mode and swapping every ID here —
-// test and live are separate worlds.
+// These are LIVE prices and require an sk_live_ key. The caps were recreated in
+// live mode when the price went to 45 EUR; the other products have existed in
+// live since July. Sandbox IDs are a separate world and will not work here.
 //
 // The three tees share one price across sizes, so L and XL point at the same ID.
 // The size still reaches the order via the session metadata below. Sold-out
@@ -41,25 +41,25 @@
 
 var PRICES = {
   // --- Blue T-shirt (35,00 €) ---
-  'blue-t-shirt::-::L': 'price_1U1QRHLiByPHkozDtKuSjrUt',
-  'blue-t-shirt::-::XL': 'price_1U1QRHLiByPHkozDtKuSjrUt',
+  'blue-t-shirt::-::L': 'price_1TtRYDLiByPHkozDHeSsMhiy',
+  'blue-t-shirt::-::XL': 'price_1TtRYDLiByPHkozDHeSsMhiy',
 
   // --- 500-chicken fingies tee (35,00 €) ---
-  '500-chicken-fingies::-::L': 'price_1U1QQjLiByPHkozDBhTAC3Ry',
+  '500-chicken-fingies::-::L': 'price_1TtRdhLiByPHkozDn3qatAI7',
 
   // --- chicken a dip tee (35,00 €) ---
-  'chicken-a-dip-tee::-::L': 'price_1U1QQFLiByPHkozDVy0cRPHV',
+  'chicken-a-dip-tee::-::L': 'price_1TtRf4LiByPHkozDhxpMZh5f',
 
   // --- Camo hoodie green/yellow (75,00 €) ---
-  'camo-hoodie-green-yellow::-::ONE SIZE': 'price_1U1QPgLiByPHkozDygG3ORSO',
+  'camo-hoodie-green-yellow::-::ONE SIZE': 'price_1TtRhdLiByPHkozDbgKaoOla',
 
   // --- reversible beanie (28,00 €) ---
-  'reversible-beanie::-::ONE SIZE': 'price_1U1QOpLiByPHkozD5RynmpCq',
+  'reversible-beanie::-::ONE SIZE': 'price_1TtRjfLiByPHkozDYUdnscVh',
 
-  // --- 5-Panel Cap (30,00 €), one price per colour ---
-  'five-panel-cap::Black::ONE SIZE': 'price_1U1QNgLiByPHkozDfOoZE8TU',
-  'five-panel-cap::Olive Green::ONE SIZE': 'price_1U1QMDLiByPHkozD960Jpcy2',
-  'five-panel-cap::Chilli Red::ONE SIZE': 'price_1U1QN5LiByPHkozD773knYYa'
+  // --- 5-Panel Cap (45,00 €), one price per colour ---
+  'five-panel-cap::Black::ONE SIZE': 'price_1UKPOELiByPHkozDJT13bb0Z',
+  'five-panel-cap::Olive Green::ONE SIZE': 'price_1UKPTBLiByPHkozDiHTlqhMq',
+  'five-panel-cap::Chilli Red::ONE SIZE': 'price_1UKPQXLiByPHkozDXTpxgZbY'
 };
 
 // Split a SKU back into readable parts, so the order in Stripe shows the size
