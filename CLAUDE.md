@@ -148,3 +148,4 @@ sold out since the customer's last visit is dropped rather than reaching checkou
 8. Images are lazy-loaded and resized to 1200px, but there is no `srcset`, so
    phones download desktop-sized files.
 9. No hash routing, so no shareable product links and refresh always lands home.
+10. 
